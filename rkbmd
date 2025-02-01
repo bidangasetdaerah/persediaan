@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rencana Kebutuhan Barang Milik Daerah</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">RKBMD</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#login">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#inputData">Input Data</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#dataTabel">Data</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Form -->
+    <div class="container mt-5" id="login">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+
+    <!-- Input Data -->
+    <div class="container mt-5 d-none" id="inputData">
+        <h2>Input Data RKBMD</h2>
+        <form id="dataForm">
+            <div class="mb-3">
+                <label for="itemName" class="form-label">Nama Barang</label>
+                <input type="text" class="form-control" id="itemName" required>
+            </div>
+            <div class="mb-3">
+                <label for="itemCategory" class="form-label">Kategori</label>
+                <input type="text" class="form-control" id="itemCategory" required>
+            </div>
+            <div class="mb-3">
+                <label for="itemQuantity" class="form-label">Jumlah</label>
+                <input type="number" class="form-control" id="itemQuantity" required>
+            </div>
+            <button type="submit" class="btn btn-success">Simpan</button>
+        </form>
+    </div>
+
+    <!-- Data Table -->
+    <div class="container mt-5 d-none" id="dataTabel">
+        <h2>Data RKBMD</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nama Barang</th>
+                    <th>Kategori</th>
+                    <th>Jumlah</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+            if (username === "admin" && password === "1234") {
+                alert("Login Berhasil");
+                document.getElementById('login').classList.add('d-none');
+                document.getElementById('inputData').classList.remove('d-none');
+                document.getElementById('dataTabel').classList.remove('d-none');
+            } else {
+                alert("Login Gagal");
+            }
+        });
+
+        document.getElementById('dataForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            var itemName = document.getElementById('itemName').value;
+            var itemCategory = document.getElementById('itemCategory').value;
+            var itemQuantity = document.getElementById('itemQuantity').value;
+            var data = { name: itemName, category: itemCategory, quantity: itemQuantity };
+
+            // Kirim ke Google Sheets
+            try {
+                await fetch("1J3HPTH8uvqqUM7afrk5Du3YWvTxsjONQYzx_Bi49SnA", {
+                    method: "POST",
+                    body: JSON.stringify(data),
+                    headers: { "Content-Type": "application/json" }
+                });
+                alert("Data berhasil disimpan!");
+                addTableRow(data);
+            } catch (error) {
+                alert("Gagal menyimpan data: " + error);
+            }
+            document.getElementById('dataForm').reset();
+        });
+
+        function addTableRow(data) {
+            var tableBody = document.getElementById('tableBody');
+            var row = tableBody.insertRow();
+            row.insertCell(0).innerHTML = data.name;
+            row.insertCell(1).innerHTML = data.category;
+            row.insertCell(2).innerHTML = data.quantity;
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
